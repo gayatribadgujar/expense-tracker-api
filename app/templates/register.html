@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+        }
+
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #msg {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Register</h1>
+
+        <input type="email" id="email" placeholder="Enter email">
+        <input type="password" id="password" placeholder="Enter password">
+
+        <button onclick="registerUser()">Register</button>
+
+        <p id="msg"></p>
+
+        <p>Already have an account? <a href="/login-page">Login</a></p>
+    </div>
+
+    <script>
+        async function registerUser() {
+            const msg = document.getElementById("msg");
+
+            try {
+                const response = await fetch("/users/register", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        email: document.getElementById("email").value,
+                        password: document.getElementById("password").value
+                    })
+                });
+
+                const text = await response.text();
+                let data;
+
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {
+                    msg.innerHTML = "Server error: " + text;
+                    msg.style.color = "red";
+                    return;
+                }
+
+                if (response.ok) {
+                    msg.innerHTML = "Registration successful!";
+                    msg.style.color = "green";
+
+                    setTimeout(() => {
+                        window.location.href = "/login-page";
+                    }, 1000);
+                } else {
+                    msg.innerHTML = "Error: " + JSON.stringify(data);
+                    msg.style.color = "red";
+                }
+            } catch (error) {
+                msg.innerHTML = "Request failed: " + error.message;
+                msg.style.color = "red";
+            }
+        }
+    </script>
+</body>
+</html>

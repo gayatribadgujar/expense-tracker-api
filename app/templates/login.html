@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+</head>
+<body>
+    <h1>Login</h1>
+
+    <input type="email" id="email" placeholder="Enter email"><br><br>
+    <input type="password" id="password" placeholder="Enter password"><br><br>
+
+    <button onclick="loginUser()">Login</button>
+
+    <p id="msg"></p>
+
+    <p>New user? <a href="/register">Register</a></p>
+
+    <script>
+        async function loginUser() {
+            const msg = document.getElementById("msg");
+
+            const response = await fetch("/users/login", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    email: document.getElementById("email").value,
+                    password: document.getElementById("password").value
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                localStorage.setItem("access_token", data.access_token);
+                localStorage.setItem("user_email", data.email);
+
+                msg.innerHTML = "Login successful!";
+                msg.style.color = "green";
+
+                setTimeout(() => {
+                    window.location.href = "/dashboard";
+                }, 1000);
+            } else {
+                msg.innerHTML = "Error: " + JSON.stringify(data);
+                msg.style.color = "red";
+            }
+        }
+    </script>
+</body>
+</html>
