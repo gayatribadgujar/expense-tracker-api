@@ -10,6 +10,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: adm
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: expense_tracker_dev_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -27,3 +42,5 @@ jobs:
       - name: Check FastAPI app imports correctly
         run: |
           python -c "from app.main import app; print('FastAPI app loaded successfully')"
+        env:
+          DATABASE_URL: postgresql+psycopg2://adm:password@localhost:5432/expense_tracker_dev_db
